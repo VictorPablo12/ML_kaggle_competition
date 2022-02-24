@@ -1,12 +1,10 @@
 import re
 import pandas as pd
 import numpy as np
-import pandas as pd
 import re
 import matplotlib.pyplot as plt
 from sklearn.cluster import DBSCAN
 from hdbscan import HDBSCAN
-import seaborn as sns
 
 def bath_clean(x):
     bath_n=0
@@ -34,12 +32,12 @@ def clean(df):
     df['host_since_year'].head()  
     
     #Cluster latitud,longitud
-    hdbscan=HDBSCAN(min_cluster_size=3,min_samples=2,cluster_selection_epsilon=0.01,
+    hdbscan=HDBSCAN(min_cluster_size=3,min_samples=2,cluster_selection_epsilon=0.5,
                     allow_single_cluster=False,prediction_data=True,leaf_size=30)
     
     locs = df[['longitude', 'latitude']] #Dataframe solo con latitudes y longitudes
     hdbscan.fit(locs)
-    #df['label_ubication']=hdbscan.fit_predict(locs)
+    df['label_ubication']=hdbscan.fit_predict(locs)
     
     #Baños:
     df['bathroom']=df.bathrooms_text.apply(bath_clean)
@@ -59,33 +57,38 @@ def clean(df):
     df.beds = df.beds.fillna(0)
     df.beds = df.beds.astype(int)
     
+    #Rellenando Super_host:
+    df.host_is_superhost= df.host_is_superhost.fillna('f')
     
     #Dropeo todo lo que no quiero:
     drop=['id','host_identity_verified','neighbourhood_group_cleansed',
     'calendar_updated','bathrooms','host_neighbourhood','host_about','listing_url','scrape_id','last_scraped',
     'name','description','neighborhood_overview','picture_url','host_id','host_url','host_name',
     'host_location','host_response_time','host_response_rate','host_acceptance_rate',
-    'host_is_superhost','host_since','review_scores_communication',
+    'host_since','review_scores_communication',
     'review_scores_location','review_scores_value','review_scores_checkin','review_scores_accuracy',
     'review_scores_cleanliness','first_review','last_review','reviews_per_month','latitude','longitude',
-    'host_thumb nail_url','host_picture_url','host_total_listings_count','host_has_profile_pic',
+    'host_thumbnail_url','host_picture_url','host_total_listings_count','host_has_profile_pic',
     'neighbourhood','neighbourhood_cleansed','property_type','bathrooms_text','amenities',
     'minimum_nights','maximum_nights','minimum_minimum_nights','maximum_minimum_nights','minimum_maximum_nights',
     'maximum_maximum_nights','minimum_nights_avg_ntm','maximum_nights_avg_ntm','has_availability',
     'availability_30','availability_60','availability_90','availability_365','calendar_last_scraped',
     'number_of_reviews','number_of_reviews_ltm','number_of_reviews_l30d','review_scores_rating',
     'license','instant_bookable','host_verifications','bedrooms','room_type','calculated_host_listings_count',
-    'calculated_host_listings_count_shared_rooms','calculated_host_listings_count_private_rooms']
+    'calculated_host_listings_count_shared_rooms','calculated_host_listings_count_private_rooms',
+    'latitude','longitude']
     for i in drop:
         df = df.drop(i, axis=1)
 
     df = df.fillna(0)   
         
-    return df
+    return df.head()
 
-    def export_pred (nombre, arvhico_destino):
-        predict = h2o.as_list(prediccion_test_completo)
-        predict.to_csv(("data/{}.csv".format(nombre)))#Exportamos a CSV
-        sample = pd.read_csv('data/sample.csv') 
-        sample.price = predict.predict  #Cambiamos columna price por la Series de Pandas que tenemos
-        sample.to_csv('data/modelo4_predict.csv', index = False)
+def export(nombre, nombre_modelo):
+    print("exporting...")
+    predict = h2o.as_list(nombre)
+    predict.to_csv(("data/{}.csv".format(nombre)))#Exportamos a CSV
+    sample = pd.read_csv('data/sample.csv') 
+    sample.price = predict.predict  #Cambiamos columna price por la Series de Pandas que tenemos
+    sample.to_csv('data/modelo{}_predict.csv'.format(nombre_modelo), index = False)
+    print ('Export done!' )

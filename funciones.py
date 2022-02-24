@@ -75,8 +75,8 @@ def clean(df):
     'availability_30','availability_60','availability_90','availability_365','calendar_last_scraped',
     'number_of_reviews','number_of_reviews_ltm','number_of_reviews_l30d','review_scores_rating',
     'license','instant_bookable','host_verifications','bedrooms','room_type','calculated_host_listings_count',
-    'calculated_host_listings_count_shared_rooms','calculated_host_listings_count_private_rooms',
-    'latitude','longitude']
+    'calculated_host_listings_count_shared_rooms','calculated_host_listings_count_private_rooms','bathroom',
+    'geo']
     for i in drop:
         df = df.drop(i, axis=1)
 

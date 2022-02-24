@@ -51,14 +51,16 @@ def clean(df):
     #df=pd.concat([df, pd.get_dummies(df.cats).reset_index(drop=True)], axis=1)
     
     #Dumies room_type:
-    pd.get_dummies(df, columns = ['room_type'])
-    
+    #pd.get_dummies(df, columns = ['room_type'])
+    #df=pd.concat([df, pd.get_dummies(df, columns = ['room_type']).reset_index(drop=True)], axis=1)
     #Casting beds:
     df.beds = df.beds.fillna(0)
     df.beds = df.beds.astype(int)
     
     #Rellenando Super_host:
     df.host_is_superhost= df.host_is_superhost.fillna('f')
+    df=pd.concat([df, pd.get_dummies(df['room_type']).reset_index(drop=True)], axis=1)
+    
     
     #Dropeo todo lo que no quiero:
     drop=['id','host_identity_verified','neighbourhood_group_cleansed',
@@ -67,8 +69,7 @@ def clean(df):
     'host_location','host_response_time','host_response_rate','host_acceptance_rate',
     'host_since','review_scores_communication',
     'review_scores_location','review_scores_value','review_scores_checkin','review_scores_accuracy',
-    'review_scores_cleanliness','first_review','last_review','reviews_per_month','latitude','longitude',
-    'host_thumbnail_url','host_picture_url','host_total_listings_count','host_has_profile_pic',
+    'review_scores_cleanliness','first_review','last_review','reviews_per_month','host_thumbnail_url','host_picture_url','host_total_listings_count','host_has_profile_pic',
     'neighbourhood','neighbourhood_cleansed','property_type','bathrooms_text','amenities',
     'minimum_nights','maximum_nights','minimum_minimum_nights','maximum_minimum_nights','minimum_maximum_nights',
     'maximum_maximum_nights','minimum_nights_avg_ntm','maximum_nights_avg_ntm','has_availability',
@@ -76,13 +77,17 @@ def clean(df):
     'number_of_reviews','number_of_reviews_ltm','number_of_reviews_l30d','review_scores_rating',
     'license','instant_bookable','host_verifications','bedrooms','room_type','calculated_host_listings_count',
     'calculated_host_listings_count_shared_rooms','calculated_host_listings_count_private_rooms','bathroom',
-    'geo']
+    'label_ubication','calculated_host_listings_count_entire_homes','host_listings_count','latitude','geo'    ,'longitude']
     for i in drop:
         df = df.drop(i, axis=1)
 
-    df = df.fillna(0)   
+    df = df.fillna(0)
+
+    df.host_is_superhost = df.host_is_superhost.map(dict(t=1, f=0))
+
+
         
-    return df.head()
+    return df
 
 def export(nombre, nombre_modelo):
     print("exporting...")

@@ -1,3 +1,3 @@
-# MACHINE LEARNING COMPETITION:
-This is the procces and Models trainned for [Ironhack Air Bnb competition](https://www.kaggle.com/c/airbnb-ironhack/overview/description)
+# AirBnB Kaggle | Machine learning competition:
+Proyecto creado para la competición de [Kaggle] (https://www.kaggle.com/c/airbnb-ironhack/overview/description)
 
